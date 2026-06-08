@@ -1,6 +1,6 @@
 import os
 import tempfile
-from parser import Parser, CommandType
+from vmtranslator.parser import Parser, CommandType
 
 
 def create_temp_vm(content: str) -> str:
