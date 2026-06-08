@@ -9,8 +9,8 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from vmtranslator.parser import Parser, CommandType
-from vmtranslator.code_writer import CodeWriter
+from vm_translator.parser import Parser, CommandType
+from vm_translator.code_writer import CodeWriter
 
 
 class VMEmulator:

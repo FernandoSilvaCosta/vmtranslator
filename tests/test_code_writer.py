@@ -1,6 +1,6 @@
 import os
 import tempfile
-from vmtranslator.code_writer import CodeWriter
+from vm_translator.code_writer import CodeWriter
 
 
 def create_temp_asm() -> tuple:

@@ -14,7 +14,7 @@ Tradutor de código intermediário VM para Assembly Hack, desenvolvido em Python
 ## 📁 Estrutura do Projeto
 
 vmtranslator/
-├── vmtranslator/
+├── vm_translator/
 │   ├── parser.py           # Analisador de arquivos .vm
 │   ├── code_writer.py      # Gerador de código Assembly Hack
 │   └── main.py             # Orquestrador
