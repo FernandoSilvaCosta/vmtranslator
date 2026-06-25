@@ -230,3 +230,48 @@ def test_arithmetic_not():
     assert 'M=!M' in asm
     os.unlink(path)
     print("✅ Teste de not passou!")
+
+def test_write_label():
+    """Testa a geração de código para label."""
+    path = create_temp_asm()
+    cw = CodeWriter(path)
+    cw._current_function = 'Main.main'
+    cw.write_label('LOOP')
+    cw.close()
+
+    asm = read_asm(path)
+    assert '(Main.main$LOOP)' in asm
+    os.unlink(path)
+    print("✅ Teste de label passou!")
+
+
+def test_write_goto():
+    """Testa a geração de código para goto."""
+    path = create_temp_asm()
+    cw = CodeWriter(path)
+    cw._current_function = 'Main.main'
+    cw.write_goto('LOOP')
+    cw.close()
+
+    asm = read_asm(path)
+    assert '@Main.main$LOOP' in asm
+    assert '0;JMP' in asm
+    os.unlink(path)
+    print("✅ Teste de goto passou!")
+
+
+def test_write_if():
+    """Testa a geração de código para if-goto."""
+    path = create_temp_asm()
+    cw = CodeWriter(path)
+    cw._current_function = 'Main.main'
+    cw.write_if('LOOP')
+    cw.close()
+
+    asm = read_asm(path)
+    assert '@Main.main$LOOP' in asm
+    assert 'D;JNE' in asm
+    os.unlink(path)
+    print("✅ Teste de if-goto passou!")
+
+
