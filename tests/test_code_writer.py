@@ -275,3 +275,68 @@ def test_write_if():
     print("✅ Teste de if-goto passou!")
 
 
+def test_write_function():
+    """Testa a geração de código para function."""
+    path = create_temp_asm()
+    cw = CodeWriter(path)
+    cw.write_function('Main.main', 2)
+    cw.close()
+
+    asm = read_asm(path)
+    assert '(Main.main)' in asm
+    assert asm.count('M=0') == 2   # 2 variáveis locais inicializadas
+    assert asm.count('M=M+1') == 2
+    os.unlink(path)
+    print("✅ Teste de function passou!")
+
+def test_write_call():
+    """Testa a geração de código para call."""
+    path = create_temp_asm()
+    cw = CodeWriter(path)
+    cw.write_call('Main.soma', 2)
+    cw.close()
+
+    asm = read_asm(path)
+    assert '@Main.soma$ret0' in asm  # return label
+    assert '@LCL' in asm
+    assert '@ARG' in asm
+    assert '@THIS' in asm
+    assert '@THAT' in asm
+    assert '0;JMP' in asm
+    assert '(Main.soma$ret0)' in asm
+    os.unlink(path)
+    print("✅ Teste de call passou!")
+
+def test_write_return():
+    """Testa a geração de código para return."""
+    path = create_temp_asm()
+    cw = CodeWriter(path)
+    cw.write_return()
+    cw.close()
+
+    asm = read_asm(path)
+    assert '@LCL' in asm
+    assert '@R14' in asm   # endFrame
+    assert '@R15' in asm   # retAddress
+    assert '@ARG' in asm
+    assert '@THAT' in asm
+    assert '@THIS' in asm
+    assert '0;JMP' in asm
+    os.unlink(path)
+    print("✅ Teste de return passou!")
+
+def test_write_init():
+    """Testa a geração do código de bootstrap."""
+    path = create_temp_asm()
+    cw = CodeWriter(path)
+    cw.write_init()
+    cw.close()
+
+    asm = read_asm(path)
+    assert '@256' in asm
+    assert '@SP' in asm
+    assert 'M=D' in asm
+    assert '@Sys.init' in asm
+    assert '0;JMP' in asm
+    os.unlink(path)
+    print("✅ Teste de bootstrap passou!")

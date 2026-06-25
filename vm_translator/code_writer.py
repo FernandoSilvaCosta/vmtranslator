@@ -179,3 +179,161 @@ class CodeWriter:
         )
 
 
+    def write_function(self, function_name: str, n_locals: int):
+        """Gera código Assembly para o comando function."""
+        self._write(f'// function {function_name} {n_locals}')
+        self._current_function = function_name  # 🆕 atualiza a função atual
+        self._write(f'({function_name})')
+
+        # inicializa as variáveis locais com 0
+        for _ in range(n_locals):
+            self._write(
+                '@SP',
+                'A=M',
+                'M=0',
+                '@SP',
+                'M=M+1',
+            )
+
+    def write_call(self, function_name: str, n_args: int):
+        """Gera código Assembly para o comando call."""
+        return_label = f'{function_name}$ret{self._return_count}'
+        self._return_count += 1
+
+        self._write(f'// call {function_name} {n_args}')
+
+        # push return address
+        self._write(f'@{return_label}', 'D=A')
+        self._push_d()
+
+        # push LCL
+        self._write('@LCL', 'D=M')
+        self._push_d()
+
+        # push ARG
+        self._write('@ARG', 'D=M')
+        self._push_d()
+
+        # push THIS
+        self._write('@THIS', 'D=M')
+        self._push_d()
+
+        # push THAT
+        self._write('@THAT', 'D=M')
+        self._push_d()
+
+        # ARG = SP - 5 - nArgs
+        self._write(
+            '@SP',
+            'D=M',
+            f'@{5 + n_args}',
+            'D=D-A',
+            '@ARG',
+            'M=D',
+        )
+
+        # LCL = SP
+        self._write(
+            '@SP',
+            'D=M',
+            '@LCL',
+            'M=D',
+        )
+
+        # goto functionName
+        self._write(f'@{function_name}', '0;JMP')
+
+        # return label
+        self._write(f'({return_label})')
+
+    def write_return(self):
+        """Gera código Assembly para o comando return."""
+        self._write('// return')
+
+        # endFrame = LCL → guarda em R14
+        self._write(
+            '@LCL',
+            'D=M',
+            '@R14',
+            'M=D',
+        )
+
+        # retAddress = *(endFrame-5) → guarda em R15
+        self._write(
+            '@5',
+            'A=D-A',
+            'D=M',
+            '@R15',
+            'M=D',
+        )
+
+        # *ARG = pop()
+        self._pop_d()
+        self._write(
+            '@ARG',
+            'A=M',
+            'M=D',
+        )
+
+        # SP = ARG + 1
+        self._write(
+            '@ARG',
+            'D=M+1',
+            '@SP',
+            'M=D',
+        )
+
+        # THAT = *(endFrame-1)
+        self._write(
+            '@R14',
+            'AM=M-1',
+            'D=M',
+            '@THAT',
+            'M=D',
+        )
+
+        # THIS = *(endFrame-2)
+        self._write(
+            '@R14',
+            'AM=M-1',
+            'D=M',
+            '@THIS',
+            'M=D',
+        )
+
+        # ARG = *(endFrame-3)
+        self._write(
+            '@R14',
+            'AM=M-1',
+            'D=M',
+            '@ARG',
+            'M=D',
+        )
+
+        # LCL = *(endFrame-4)
+        self._write(
+            '@R14',
+            'AM=M-1',
+            'D=M',
+            '@LCL',
+            'M=D',
+        )
+
+        # goto retAddress
+        self._write(
+            '@R15',
+            'A=M',
+            '0;JMP',
+        )
+
+    def write_init(self):
+        """Gera código de bootstrap: SP=256 e call Sys.init."""
+        self._write('// bootstrap')
+        self._write(
+            '@256',
+            'D=A',
+            '@SP',
+            'M=D',
+        )
+        self.write_call('Sys.init', 0)
+
