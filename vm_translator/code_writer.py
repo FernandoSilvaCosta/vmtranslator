@@ -11,7 +11,13 @@ class CodeWriter:
     def __init__(self, filename: str):
         self._file = open(filename, 'w')
         self._label_count = 0  # contador para labels únicos (eq, gt, lt)
+        self._return_count = 0 
         self._static_base = filename.replace('.asm', '').split('/')[-1]
+        self._current_function = ''
+
+    def set_filename(self, filename: str):
+        """Atualiza o nome do arquivo atual para variáveis estáticas."""
+        self._static_base = filename
 
     def _write(self, *lines: str):
         """Escreve linhas no arquivo .asm."""
@@ -147,5 +153,29 @@ class CodeWriter:
     def close(self):
         """Fecha o arquivo .asm."""
         self._file.close()
+
+    def write_label(self, label: str):
+        """Gera código Assembly para o comando label."""
+        self._write(f'// label {label}')
+        self._write(f'({self._current_function}${label})')
+
+    def write_goto(self, label: str):
+        """Gera código Assembly para o comando goto."""
+        self._write(f'// goto {label}')
+        self._write(
+            f'@{self._current_function}${label}',
+            '0;JMP',
+        )
+
+    def write_if(self, label: str):
+        """Gera código Assembly para o comando if-goto."""
+        self._write(f'// if-goto {label}')
+        self._write(
+            '@SP',
+            'AM=M-1',
+            'D=M',
+            f'@{self._current_function}${label}',
+            'D;JNE',
+        )
 
 

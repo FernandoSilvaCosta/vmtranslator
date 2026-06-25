@@ -126,3 +126,69 @@ def test_multiple_commands():
     os.unlink(path)
     print("✅ Teste de múltiplos comandos passou!")
 
+def test_command_type_label():
+    """Testa o tipo de comando label."""
+    path = create_temp_vm("label LOOP\n")
+    parser = Parser(path)
+    parser.advance()
+    assert parser.command_type() == CommandType.C_LABEL
+    assert parser.arg1() == 'LOOP'
+    os.unlink(path)
+    print("✅ Teste de label passou!")
+
+
+def test_command_type_goto():
+    """Testa o tipo de comando goto."""
+    path = create_temp_vm("goto LOOP\n")
+    parser = Parser(path)
+    parser.advance()
+    assert parser.command_type() == CommandType.C_GOTO
+    assert parser.arg1() == 'LOOP'
+    os.unlink(path)
+    print("✅ Teste de goto passou!")
+
+
+def test_command_type_if():
+    """Testa o tipo de comando if-goto."""
+    path = create_temp_vm("if-goto LOOP\n")
+    parser = Parser(path)
+    parser.advance()
+    assert parser.command_type() == CommandType.C_IF
+    assert parser.arg1() == 'LOOP'
+    os.unlink(path)
+    print("✅ Teste de if-goto passou!")
+
+
+def test_command_type_function():
+    """Testa o tipo de comando function."""
+    path = create_temp_vm("function Main.main 2\n")
+    parser = Parser(path)
+    parser.advance()
+    assert parser.command_type() == CommandType.C_FUNCTION
+    assert parser.arg1() == 'Main.main'
+    assert parser.arg2() == 2
+    os.unlink(path)
+    print("✅ Teste de function passou!")
+
+
+def test_command_type_call():
+    """Testa o tipo de comando call."""
+    path = create_temp_vm("call Main.main 3\n")
+    parser = Parser(path)
+    parser.advance()
+    assert parser.command_type() == CommandType.C_CALL
+    assert parser.arg1() == 'Main.main'
+    assert parser.arg2() == 3
+    os.unlink(path)
+    print("✅ Teste de call passou!")
+
+
+def test_command_type_return():
+    """Testa o tipo de comando return."""
+    path = create_temp_vm("return\n")
+    parser = Parser(path)
+    parser.advance()
+    assert parser.command_type() == CommandType.C_RETURN
+    os.unlink(path)
+    print("✅ Teste de return passou!")
+
