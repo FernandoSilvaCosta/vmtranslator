@@ -1,10 +1,18 @@
 from enum import Enum
 
 
+
 class CommandType(Enum):
     C_ARITHMETIC = "C_ARITHMETIC"
     C_PUSH       = "C_PUSH"
     C_POP        = "C_POP"
+    C_LABEL      = "C_LABEL"      
+    C_GOTO       = "C_GOTO"       
+    C_IF         = "C_IF"         
+    C_FUNCTION   = "C_FUNCTION"   
+    C_CALL       = "C_CALL"       
+    C_RETURN     = "C_RETURN"     
+
 
 
 ARITHMETIC_COMMANDS = {
@@ -24,7 +32,6 @@ class Parser:
                 for line in f
                 if line.strip() and not line.strip().startswith('//')
             ]
-            # remove linhas que ficaram vazias após remover comentários
             self.commands = [cmd for cmd in self.commands if cmd]
         self.index = 0
         self.current = None
@@ -47,6 +54,18 @@ class Parser:
             return CommandType.C_PUSH
         elif cmd == 'pop':
             return CommandType.C_POP
+        elif cmd == 'label':
+            return CommandType.C_LABEL
+        elif cmd == 'goto':
+            return CommandType.C_GOTO
+        elif cmd == 'if-goto':
+            return CommandType.C_IF
+        elif cmd == 'function':
+            return CommandType.C_FUNCTION
+        elif cmd == 'call':
+            return CommandType.C_CALL
+        elif cmd == 'return':
+            return CommandType.C_RETURN
 
     def arg1(self) -> str:
         """Retorna o primeiro argumento do comando atual."""
@@ -55,6 +74,6 @@ class Parser:
         return self.current[1]
 
     def arg2(self) -> int:
-        """Retorna o segundo argumento (apenas para push e pop)."""
+        """Retorna o segundo argumento (apenas para push, pop, function e call)."""
         return int(self.current[2])
 
