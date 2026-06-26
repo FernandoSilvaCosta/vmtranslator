@@ -16,17 +16,17 @@ def translate(parser: Parser, cw: CodeWriter):
             cw.write_push(parser.arg1(), parser.arg2())
         elif cmd_type == CommandType.C_POP:
             cw.write_pop(parser.arg1(), parser.arg2())
-        elif cmd_type == CommandType.C_LABEL:        # 🆕
+        elif cmd_type == CommandType.C_LABEL:        
             cw.write_label(parser.arg1())
-        elif cmd_type == CommandType.C_GOTO:         # 🆕
+        elif cmd_type == CommandType.C_GOTO:        
             cw.write_goto(parser.arg1())
-        elif cmd_type == CommandType.C_IF:           # 🆕
+        elif cmd_type == CommandType.C_IF:          
             cw.write_if(parser.arg1())
-        elif cmd_type == CommandType.C_FUNCTION:     # 🆕
+        elif cmd_type == CommandType.C_FUNCTION:     
             cw.write_function(parser.arg1(), parser.arg2())
-        elif cmd_type == CommandType.C_CALL:         # 🆕
+        elif cmd_type == CommandType.C_CALL:         
             cw.write_call(parser.arg1(), parser.arg2())
-        elif cmd_type == CommandType.C_RETURN:       # 🆕
+        elif cmd_type == CommandType.C_RETURN:       
             cw.write_return()
 
 
@@ -38,7 +38,7 @@ def main():
     path = sys.argv[1]
 
     if not os.path.exists(path):
-        print(f"❌ Caminho não encontrado: {path}")
+        print(f"Caminho não encontrado: {path}")
         sys.exit(1)
 
     # compila uma pasta inteira
@@ -57,12 +57,12 @@ def main():
             translate(parser, cw)
 
         cw.close()
-        print(f"✅ Gerado: {output_path}")
+        print(f"Gerado: {output_path}")
 
     # compila um único arquivo
     elif os.path.isfile(path):
         if not path.endswith('.vm'):
-            print("❌ O arquivo deve ter extensão .vm")
+            print("O arquivo deve ter extensão .vm")
             sys.exit(1)
 
         output_path = path.replace('.vm', '.asm')
